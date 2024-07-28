@@ -58,14 +58,14 @@ VALUES
 
 
 --List the names of the companies that are below the average revenue of all companies 
-
 WITH average_revenue AS (SELECT AVG(revenue) AS avg_revenue FROM fortune_companies)
 
 SELECT company_name,
 CASE WHEN revenue < (SELECT avg_revenue FROM average_revenue) THEN 'BELOW'
 ELSE 'ABOVE'
 END AS revenue_status
-FROM fortune_companies;
+FROM fortune_companies
+;
 
 --Which industry makes up the highest revenue?
 SELECT industry, ROUND(SUM(revenue),1) AS total_revenue
@@ -79,4 +79,17 @@ SELECT industry, SUM(employees) AS total_employees
 FROM fortune_companies
 GROUP BY industry
 ORDER BY total_employees desc
+;
 
+-- List the company names that offer healthcare benefits and have more than 20 PTO days
+SELECT company_name, healthcare_benefits, paid_time_off_days
+FROM fortune_companies
+WHERE healthcare_benefits = 1 AND paid_time_off_days > 20
+;
+
+-- Count the number of industries that have more than 5 companies in the data table 
+SELECT industry, COUNT(company_name) AS company_count
+FROM fortune_companies
+GROUP BY industry
+HAVING company_count > 5
+;

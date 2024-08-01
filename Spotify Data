@@ -1,0 +1,59 @@
+# For this project, I downloaded Spotify data from Kaggle.
+# Then I created a table to insert Spotify data into.
+# Finally, I performed analytics on the data using SQL. 
+----------------------------------
+#Creating the table: 
+CREATE TABLE BIT_DB.Spotifydata (
+id integer PRIMARY KEY,
+artist_name varchar NOT NULL,
+track_name varchar NOT NULL,
+track_id varchar NOT NULL,
+popularity integer NOT NULL,
+danceability decimal(4,3) NOT NULL,
+energy decimal(4,3) NOT NULL,
+key integer NOT NULL,
+loudness decimal(5,3) NOT NULL,
+mode integer NOT NULL,
+speechiness decimal(5,4) NOT NULL,
+acousticness decimal(6,5) NOT NULL,
+instrumentalness text NOT NULL,
+liveness decimal(5,4) NOT NULL,
+valence decimal(4,3) NOT NULL,
+tempo decimal(6,3) NOT NULL,
+duration_ms integer NOT NULL,
+time_signature integer NOT NULL 
+)
+----------------------------------
+#Then I inserted the Spotify Data .csv into the table
+
+#Next, I explored the data using the following SQL
+
+--List me the artists and track names with a danceability and energy of at least 0.5
+SELECT artist_name,
+       track_name
+  FROM Spotifydata
+ WHERE danceability >= 0.5 AND 
+       energy >= 0.5;
+
+-- Who are the top 10 artists based on popularity?
+SELECT DISTINCT artist_name
+  FROM Spotifydata
+ ORDER BY popularity DESC
+ LIMIT 10;
+
+-- What is the average loudness of the songs in the database?
+SELECT AVG(loudness) AS AVG_LOUDNESS
+  FROM Spotifydata;
+  
+-- For this query, show how which artists and track names had a tempo above or below 100
+SELECT artist_name,
+       track_name,
+       CASE WHEN tempo > 100 THEN "ABOVE" ELSE "BELOW" END AS TEMPO
+  FROM BIT_DB.Spotifydata
+ GROUP BY TEMPO;-- 
+
+-- List the track names that begin with the letter "T" 
+SELECT track_name
+FROM Spotifydata
+WHERE track_name LIKE "T%";
+

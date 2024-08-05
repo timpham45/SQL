@@ -1,0 +1,71 @@
+#This analysis involves a big dataset labeled "Chinook". There were tables and attributes which were primary and foreign keys in connection to each other. Shown below is a quick synopsis of the database diagram:
+--employees table stores employees data such as employee id, last name, first name, etc. It also has a field named ReportsTo to specify who reports to whom.
+--customers table stores customers data. The line between employees.Employeeid and customers.SupportRepID shows how the two tables are related (ie, how you would JOIN them).
+--The invoices table stores invoice header data (Customer ID, Billing Address, etc) and the invoice_items table stores the invoice line items data (Unit Price, Quantity). 
+--Artists table stores artists data.
+--albums table stores data about a list of tracks. Each album belongs to one artist. However, one artist may have multiple albums.
+--media_types table stores media types such as MPEG audio and AAC audio files.
+--genres table stores music types such as rock, jazz, metal, etc.
+--tracks table stores the data of songs. Each track belongs to one album.
+--playlists table store data about playlists. Each playlist contains a list of tracks. Each track may belong to multiple playlists. The relationship between the playlists table and tracks table is many-to-many. The playlist_track table is used to reflect this relationship.
+
+
+
+#Analysis of the Chinook dataset using SQL: 
+-- List the customers that are located in India
+SELECT CustomerID, FirstName, LastName
+FROM customers
+WHERE Country = 'India';
+
+--What are the names of the tracks that have the genre, Rock and Roll (GenreId = 5) 
+SELECT t.TrackId, t.Name
+FROM tracks t
+LEFT JOIN genres g ON t.GenreId = g.GenreId 
+WHERE t.GenreId = 7;
+
+--Name me the artist(s) that are in the Album, "Warner 25 Anos" as well as the tracks in that album
+SELECT a.Name AS 'Artist Name' , t.Name AS 'Track Name'
+FROM albums alb
+LEFT JOIN tracks t ON alb.AlbumId = t.AlbumId
+LEFT JOIN artists a ON alb.ArtistId = a.ArtistId
+WHERE alb.Title = 'Warner 25 Anos' ; 
+
+-- Show information from customers who are not in the US
+SELECT CustomerId,FirstName,LastName, Country
+FROM customers
+WHERE Country <> 'USA'; 
+
+-- Show information from customers who are from Brazil
+SELECT CustomerId,FirstName,LastName, Country
+FROM customers
+WHERE Country = 'Brazil' 
+
+-- Find invoices of customers who are from Brazil
+SELECT InvoiceId, FirstName, LastName, InvoiceDate, Country
+FROM customers c 
+LEFT JOIN invoices i ON i.InvoiceId = c.CustomerId 
+WHERE Country = 'Brazil';  
+
+--Show the Employees who are Sales Agents
+SELECT FirstName, LastName, Title
+FROM employees
+WHERE Title LIKE 'S%'; 
+
+-- How many Invoices were there in 2009?
+SELECT COUNT (InvoiceId) AS Invoice_Amount
+FROM invoices
+WHERE InvoiceDate LIKE "2009%"; 
+
+--Show the total sales made by each sales agent.
+SELECT emp.FirstName, emp.LastName,
+ROUND(SUM(Inv.Total), 2) as 'Total Sales' 
+FROM chinook.Employees emp
+
+INNER JOIN chinook.Customers cust 
+ON cust.SupportRepId = emp.EmployeeId
+
+INNER JOIN chinook.Invoices Inv 
+ON Inv.CustomerId = cust.CustomerId
+
+WHERE emp.Title = 'Sales Support Agent' 
+GROUP BY emp.FirstName;
